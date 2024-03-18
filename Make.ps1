@@ -1,11 +1,10 @@
 if (Test-Path -Path "E:") {
-    $drv = "E:"
+    $workspace = "E:\workspace"
+    $Documents = "E:\Documents"
 } else {
-    $drv = "C:"
+    $workspace = "C:\workspace"
+    $Documents = "$home\Documents"
 }
-
-$Documents = "$drv\Documents"
-$workspace = "$drv\workspace"
 
 New-Item -Path "$Documents\" -Name "AutoHotkey" -ItemType "directory"
 Copy-Item -Path ".\scripts\tilde.ahk" -Destination "$Documents\AutoHotkey"
