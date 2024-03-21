@@ -12,7 +12,7 @@ Copy-Item -Path ".\links\tilde.ahk.lnk" -Destination "%APPDATA%\Microsoft\Window
 
 New-Item -Path "$workspace\" -Name "Powershell Scripts" -ItemType "directory"
 Copy-Item -Path ".\scripts\*.ps1" -Destination "$workspace\Powershell Scripts"
-Copy-Item -Path ".\links\*" -Destination "$home\Desktop"
+Copy-Item -Path ".\links\*.ps1.lnk" -Destination "$home\Desktop"
 
 cd ..
 Remove-Item "my-windows-scripts" -Recurse
