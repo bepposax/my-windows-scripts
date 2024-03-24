@@ -12,7 +12,7 @@ $ahkPath = "$Documents\AutoHotkey"
 if (!(Test-Path -Path $ahkPath)) {
     New-Item -Path "$Documents\" -Name "AutoHotkey" -ItemType "directory"
 }
-Copy-Item -Path ".\scripts\tilde.ahk" -Destination $ahkPath
+Copy-Item -Path "$PSScriptRoot\scripts\tilde.ahk" -Destination $ahkPath
 $shell = New-Object -ComObject WScript.Shell
 $shortcut = $shell.CreateShortcut("$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\tilde.ahk.lnk")
 $shortcut.TargetPath = "$ahkPath\tilde.ahk"
@@ -25,10 +25,10 @@ if (!(Test-Path -Path $scriptsPath)) {
 }
 # if using laptop 
 if ((Get-WmiObject -Class Win32_ComputerSystem -Property PCSystemType).PCSystemType -eq 2) {
-    Copy-Item -Path ".\scripts\*.ps1" -Destination "$scriptsPath"
+    Copy-Item -Path "$PSScriptRoot\scripts\*.ps1" -Destination "$scriptsPath"
 }
 else {
-    Copy-Item -Path ".\scripts\Clear Temp Folder.ps1" -Destination "$scriptsPath"
+    Copy-Item -Path "$PSScriptRoot\scripts\Clear Temp Folder.ps1" -Destination "$scriptsPath"
 }
 
 foreach ($file in Get-ChildItem -Path "$scriptsPath" -File) {
@@ -38,3 +38,5 @@ foreach ($file in Get-ChildItem -Path "$scriptsPath" -File) {
     $shortcut.Arguments = "-ExecutionPolicy Bypass -File `"$scriptsPath\$file`""
     $shortcut.Save()
 }
+if ($PWD.Path -eq $PSScriptRoot) { Set-Location .. }
+Remove-Item $PSScriptRoot -Recurse
