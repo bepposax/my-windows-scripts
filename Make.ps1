@@ -39,4 +39,4 @@ foreach ($file in Get-ChildItem -Path "$scriptsPath" -File) {
     $shortcut.Save()
 }
 if ($PWD.Path -eq $PSScriptRoot) { Set-Location .. }
-Remove-Item $PSScriptRoot -Recurse
+Remove-Item $PSScriptRoot -Recurse -Force
