@@ -1,24 +1,40 @@
-$IsLaptop = (Get-WmiObject -Class Win32_ComputerSystem -Property PCSystemType).PCSystemType -eq 2
-
 if (Test-Path -Path "E:") {
     $workspace = "E:\workspace"
     $Documents = "E:\Documents"
-} else {
+}
+else {
     $workspace = "C:\workspace"
     $Documents = "$home\Documents"
 }
 
-New-Item -Path "$Documents\" -Name "AutoHotkey" -ItemType "directory"
-Copy-Item -Path ".\scripts\tilde.ahk" -Destination "$Documents\AutoHotkey"
-Copy-Item -Path ".\links\tilde.ahk.lnk" -Destination "$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup"
-
-New-Item -Path "$workspace\" -Name "Powershell Scripts" -ItemType "directory"
-if ($IsLaptop) {
-    Copy-Item -Path ".\scripts\*.ps1" -Destination "$workspace\Powershell Scripts"
-    Copy-Item -Path ".\links\*.ps1.lnk" -Destination "$home\Desktop"
-} else {
-    Copy-Item -Path ".\scripts\Clear Temp Folder.ps1" -Destination "$workspace\Powershell Scripts"
-    Copy-Item -Path ".\links\Clear Temp Folder.ps1.lnk" -Destination "$home\Desktop"
+# add ahk script
+$ahkPath = "$Documents\AutoHotkey"
+if (!(Test-Path -Path $ahkPath)) {
+    New-Item -Path "$Documents\" -Name "AutoHotkey" -ItemType "directory"
 }
-cd ..
-Remove-Item "my-windows-scripts" -Recurse
+Copy-Item -Path ".\scripts\tilde.ahk" -Destination $ahkPath
+$shell = New-Object -ComObject WScript.Shell
+$shortcut = $shell.CreateShortcut("$env:APPDATA\Microsoft\Windows\Start Menu\Programs\Startup\tilde.ahk.lnk")
+$shortcut.TargetPath = "$ahkPath\tilde.ahk"
+$shortcut.Save()
+
+# add ps1 scripts
+$scriptsPath = "$workspace\Powershell Scripts"
+if (!(Test-Path -Path $scriptsPath)) {
+    New-Item -Path "$workspace\" -Name "Powershell Scripts" -ItemType "directory"
+}
+# if using laptop 
+if ((Get-WmiObject -Class Win32_ComputerSystem -Property PCSystemType).PCSystemType -eq 2) {
+    Copy-Item -Path ".\scripts\*.ps1" -Destination "$scriptsPath"
+}
+else {
+    Copy-Item -Path ".\scripts\Clear Temp Folder.ps1" -Destination "$scriptsPath"
+}
+
+foreach ($file in Get-ChildItem -Path "$scriptsPath" -File) {
+    $shell = New-Object -ComObject WScript.Shell
+    $shortcut = $shell.CreateShortcut("$home\Desktop\$file.lnk")
+    $shortcut.TargetPath = "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe"
+    $shortcut.Arguments = "-ExecutionPolicy Bypass -File `"$scriptsPath\$file`""
+    $shortcut.Save()
+}
