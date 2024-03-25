@@ -38,5 +38,6 @@ foreach ($file in Get-ChildItem -Path "$scriptsPath" -File) {
     $shortcut.Arguments = "-ExecutionPolicy Bypass -File `"$scriptsPath\$file`""
     $shortcut.Save()
 }
-if ($PWD.Path -eq $PSScriptRoot) { Set-Location .. }
+
+if ($PWD.Path.EndsWith($PSScriptRoot)) { Set-Location .. }
 Remove-Item $PSScriptRoot -Recurse -Force
